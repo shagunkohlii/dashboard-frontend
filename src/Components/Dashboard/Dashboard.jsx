@@ -22,7 +22,7 @@ const Dashboard = () => {
   useEffect(() => {
     const dataFetch = async () => {
       try {
-        const resdata = await fetch(`http://localhost:5000/api/data`);
+        const resdata = await fetch(`${process.env.REACT_APP_BASE_URL}/api/data`);
         const responseData = await resdata.json();
         console.log(responseData);
         setData(responseData);
