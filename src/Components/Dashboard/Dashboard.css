@@ -1,0 +1,83 @@
+/* Dashboard container */
+
+.dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f0f2f5;
+}
+
+/* Card styles */
+.v-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.v-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Card header */
+.v-card-item {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.v-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+/* Card content */
+.v-card-text {
+  padding: 20px;
+}
+
+/* Chart canvas */
+canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* Responsive grid */
+.v-col-md-6 {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .v-col-md-6 {
+    width: calc(50% - 10px);
+  }
+}
+
+/* Additional styles for better responsiveness */
+@media (max-width: 767px) {
+  .dashboard {
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .v-card-item {
+    padding: 12px 16px;
+  }
+  
+  .v-card-text {
+    padding: 16px;
+  }
+  
+  .v-card-title {
+    font-size: 1.1rem;
+  }
+}
+
+/* Optional: Add some color variety to cards */
+.v-card:nth-child(4n+1) { border-top: 4px solid #4caf50; }
+.v-card:nth-child(4n+2) { border-top: 4px solid #2196f3; }
+.v-card:nth-child(4n+3) { border-top: 4px solid #ff9800; }
+.v-card:nth-child(4n+4) { border-top: 4px solid #e91e63; }
