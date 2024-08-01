@@ -7,22 +7,40 @@ const Dashboard = () => {
   const [data, setData] = useState(null);
   const [error, setError] = useState();
 
-  const chartRefs = {
-    intensity: useRef(null),
-    likelihood: useRef(null),
-    relevance: useRef(null),
-    topic: useRef(null),
+  const chartConfigs = [
+    {
+      id: "intensityChart",
+      label: "Intensity by Region",
+      key: "region",
+      type: "pie",
+    },
+    {
+      id: "likelihoodChart",
+      label: "Likelihood by Country",
+      key: "country",
+      type: "bar",
+    },
+    {
+      id: "relevanceChart",
+      label: "Relevance by Country",
+      key: "topic",
+      type: "line",
+    },
+    { id: "topicsChart", label: "Topics", key: "relevance", type: "bar" },
+    { id: "cityChart", label: "City", key: "intensity", type: "line" },
+    { id: "regionChart", label: "Region", key: "intensity", type: "pie" },
+    { id: "yearChart", label: "Year", key: "start_year", type: "doughnut" },
+    { id: "countryChart", label: "Country", key: "country", type: "polarArea" },
+  ];
 
-    year: useRef(null),
-    country: useRef(null),
-    region: useRef(null),
-    city: useRef(null),
-  };
+  const chartRefs = useRef({});
 
   useEffect(() => {
     const dataFetch = async () => {
       try {
-        const resdata = await fetch(`${process.env.REACT_APP_BASE_URL}/api/data`);
+        const resdata = await fetch(
+          `${process.env.REACT_APP_BASE_URL}/api/data`
+        );
         const responseData = await resdata.json();
         console.log(responseData);
         setData(responseData);
@@ -121,195 +139,32 @@ const Dashboard = () => {
       console.log(limitedData); // Log limitedData instead of aggregateData
       return limitedData;
     };
-
-    const intensityData = aggregateData(data, "region");
-    const likelihoodData = aggregateData(data, "country");
-    const relevanceData = aggregateData(data, "topic");
-    const topicsData = aggregateData(data, "relevance");
-
-    const regionData = aggregateData(data, "intensity");
-    const yearData = aggregateData(data, "start_year");
-    const countryData = aggregateData(data, "country");
-    const cityData = aggregateData(data, "intensity");
-
-    chartRefs.intensity.current = createChart(
-      document.getElementById("intensityChart").getContext("2d"),
-      "Intensity by Region",
-      intensityData,
-      "pie"
-    );
-    chartRefs.likelihood.current = createChart(
-      document.getElementById("likelihoodChart").getContext("2d"),
-      "likelihood by Region",
-      likelihoodData,
-      "bar"
-    );
-    chartRefs.relevance.current = createChart(
-      document.getElementById("relevanceChart").getContext("2d"),
-      "Relevance by Country",
-      relevanceData,
-      "line"
-    );
-    chartRefs.topic.current = createChart(
-      document.getElementById("topicsChart").getContext("2d"),
-      "topic",
-      topicsData,
-      "bar"
-    );
-    chartRefs.region.current = createChart(
-      document.getElementById("cityChart").getContext("2d"),
-      "city",
-      cityData,
-      "line"
-    );
-    chartRefs.city.current = createChart(
-      document.getElementById("regionChart").getContext("2d"),
-      "region",
-      regionData,
-      "pie"
-    );
-    chartRefs.year.current = createChart(
-      document.getElementById("yearChart").getContext("2d"),
-      "year",
-      yearData,
-      "doughnut"
-    );
-    chartRefs.country.current = createChart(
-      document.getElementById("countryChart").getContext("2d"),
-      "country",
-      countryData,
-      "polarArea"
-    );
-  }, [data, chartRefs]);
+    chartConfigs.forEach(({ id, label, key, type }) => {
+      const ctx = document.getElementById(id).getContext("2d");
+      const aggregatedData = aggregateData(data, key);
+      if (chartRefs.current[id]) {
+        chartRefs.current[id].destroy();
+      }
+      chartRefs.current[id] = createChart(ctx, label, aggregatedData, type);
+    });
+  }, [data, chartConfigs]);
 
   return (
     <div className="dashboard">
-      <div className="v-col-md-6 v-col-12">
-        <div className="v-card v-theme--light v-card--density-default v-card--variant-elevated">
-          <div className="v-card-item">
-            <div className="v-card-item__content">
-              <h4 className="v-card-title">Likelihood by Country</h4>
+      {chartConfigs.map(({ id, label }) => (
+        <div key={id} className="v-col-md-6 v-col-12">
+          <div className="v-card v-theme--light v-card--density-default v-card--variant-elevated">
+            <div className="v-card-item">
+              <div className="v-card-item__content">
+                <h4 className="v-card-title">{label}</h4>
+              </div>
+            </div>
+            <div className="v-card-text">
+              <canvas width={525} height={500} role="img" id={id}></canvas>
             </div>
           </div>
-          <div className="v-card-text">
-            <canvas
-              width={525}
-              height={500}
-              role="img"
-              id="likelihoodChart"
-            ></canvas>
-          </div>
         </div>
-      </div>
-      <div className="v-col-md-6 v-col-12">
-        <div className="v-card v-theme--light v-card--density-default v-card--variant-elevated">
-          <div className="v-card-item">
-            <div className="v-card-item__content">
-              <h4 className="v-card-title">Intensity by Region</h4>
-            </div>
-          </div>
-          <div className="v-card-text">
-            <canvas
-              width={525}
-              height={500}
-              role="img"
-              id="intensityChart"
-            ></canvas>
-          </div>
-        </div>
-      </div>
-      <div className="v-col-md-6 v-col-12">
-        <div className="v-card v-theme--light v-card--density-default v-card--variant-elevated">
-          <div className="v-card-item">
-            <div className="v-card-item__content">
-              <h4 className="v-card-title">Relevance by country</h4>
-            </div>
-          </div>
-          <div className="v-card-text">
-            <canvas
-              width={525}
-              height={500}
-              role="img"
-              id="relevanceChart"
-            ></canvas>
-          </div>
-        </div>
-      </div>
-      <div className="v-col-md-6 v-col-12">
-        <div className="v-card v-theme--light v-card--density-default v-card--variant-elevated">
-          <div className="v-card-item">
-            <div className="v-card-item__content">
-              <h4 className="v-card-title">Topics</h4>
-            </div>
-          </div>
-          <div className="v-card-text">
-            <canvas
-              width={525}
-              height={500}
-              role="img"
-              id="topicsChart"
-            ></canvas>
-          </div>
-        </div>
-      </div>
-      <div className="v-col-md-6 v-col-12">
-        <div className="v-card v-theme--light v-card--density-default v-card--variant-elevated">
-          <div className="v-card-item">
-            <div className="v-card-item__content">
-              <h4 className="v-card-title">City</h4>
-            </div>
-          </div>
-          <div className="v-card-text">
-            <canvas width={525} height={500} role="img" id="cityChart"></canvas>
-          </div>
-        </div>
-      </div>
-      <div className="v-col-md-6 v-col-12">
-        <div className="v-card v-theme--light v-card--density-default v-card--variant-elevated">
-          <div className="v-card-item">
-            <div className="v-card-item__content">
-              <h4 className="v-card-title">Year</h4>
-            </div>
-          </div>
-          <div className="v-card-text">
-            <canvas width={525} height={500} role="img" id="yearChart"></canvas>
-          </div>
-        </div>
-      </div>
-      <div className="v-col-md-6 v-col-12">
-        <div className="v-card v-theme--light v-card--density-default v-card--variant-elevated">
-          <div className="v-card-item">
-            <div className="v-card-item__content">
-              <h4 className="v-card-title">Region</h4>
-            </div>
-          </div>
-          <div className="v-card-text">
-            <canvas
-              width={525}
-              height={500}
-              role="img"
-              id="regionChart"
-            ></canvas>
-          </div>
-        </div>
-      </div>
-      <div className="v-col-md-6 v-col-12">
-        <div className="v-card v-theme--light v-card--density-default v-card--variant-elevated">
-          <div className="v-card-item">
-            <div className="v-card-item__content">
-              <h4 className="v-card-title">Country</h4>
-            </div>
-          </div>
-          <div className="v-card-text">
-            <canvas
-              width={525}
-              height={500}
-              role="img"
-              id="countryChart"
-            ></canvas>
-          </div>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };
